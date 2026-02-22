@@ -1,4 +1,4 @@
-import { colors } from '@/constants/theme';
+import { borderRadius, colors, spacing, typography } from '@/constants/theme';
 import { mockAuthService } from '@/src/services/mock/auth-service';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -56,23 +56,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
+    ...typography.title,
     color: colors.gold,
-    marginBottom: 8,
+    marginBottom: spacing.xs,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
+    ...typography.subtitle,
     color: colors.textSecondary,
-    marginBottom: 60,
+    marginBottom: spacing.headerTop,
     textAlign: 'center',
   },
   googleButton: {
     backgroundColor: colors.gold,
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderRadius: 12,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xl,
+    borderRadius: borderRadius.md,
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
@@ -80,7 +79,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: colors.bgPrimary,
-    fontSize: 18,
-    fontWeight: '600',
+    ...typography.cardTitle,
   },
 });

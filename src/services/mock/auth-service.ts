@@ -7,7 +7,6 @@ export interface AuthUser {
   id: string;
   email: string;
   name: string;
-  picture?: string;
 }
 
 export interface AuthResult {
@@ -32,7 +31,6 @@ class MockAuthService {
       id: 'mock-user-123',
       email: 'user@example.com',
       name: 'Demo User',
-      picture: 'https://via.placeholder.com/150',
     };
 
     this.currentUser = mockUser;

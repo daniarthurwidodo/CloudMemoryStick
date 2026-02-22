@@ -11,10 +11,63 @@ export const colors = {
   surface: "#16161F",
   gold: "#FFD700",
   goldSoft: "#FFC300",
+  primary: "#FFD700",
   textPrimary: "#F5F7FA",
   textSecondary: "#9AA4B2",
   success: "#00FF9C",
+  error: "#FF3B3B",
   danger: "#FF3B3B",
+  white: "#FFFFFF",
+  border: "#2A2A35",
+};
+
+export const spacing = {
+  xs: 8,
+  sm: 12,
+  md: 16,
+  lg: 20,
+  xl: 24,
+  xxl: 30,
+  headerTop: 60,
+};
+
+export const borderRadius = {
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 20,
+  full: 9999,
+};
+
+export const typography = {
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold' as const,
+  },
+  subtitle: {
+    fontSize: 16,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold' as const,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '600' as const,
+  },
+  body: {
+    fontSize: 16,
+  },
+  caption: {
+    fontSize: 14,
+  },
+  small: {
+    fontSize: 12,
+  },
+  button: {
+    fontSize: 16,
+    fontWeight: '600' as const,
+  },
 };
 
 const tintColorLight = '#0a7ea4';

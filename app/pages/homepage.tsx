@@ -1,12 +1,19 @@
-import { colors } from '@/constants/theme';
-import { Image, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { borderRadius, colors, spacing, typography } from '@/constants/theme';
+import { mockEmulatorSections } from '@/data/mockup-data';
+import { Ionicons } from '@expo/vector-icons';
+import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 export default function HomePage() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Dashboard</Text>
-        <Text style={styles.subtitle}>Your emulator cloud overview</Text>
+        <View>
+          <Text style={styles.title}>Dashboard</Text>
+          <Text style={styles.subtitle}>Your emulator cloud overview</Text>
+        </View>
+        <Pressable style={styles.logoutButton}>
+          <Ionicons name="log-out-outline" size={24} color={colors.textPrimary} />
+        </Pressable>
       </View>
 
       <View style={styles.syncCard}>
@@ -21,52 +28,27 @@ export default function HomePage() {
         />
       </View>
 
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>PPSSPP</Text>
-          <Text style={styles.sectionSize}>1.8 GB</Text>
-        </View>
+      <Pressable style={styles.addFolderButton}>
+        <Text style={styles.addFolderText}>Add folder</Text>
+      </Pressable>
 
-        <View style={styles.gameCard}>
-          <Image
-            source={{ uri: 'https://via.placeholder.com/60' }}
-            style={styles.gameIcon}
-          />
-          <View style={styles.gameInfo}>
-            <Text style={styles.gameName}>God of War: Ghost of Sparta</Text>
-            <Text style={styles.gameFile}>.sav file</Text>
+      {mockEmulatorSections.map((section) => (
+        <View key={section.name} style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>{section.name}</Text>
+            <Text style={styles.sectionSize}>{section.size}</Text>
           </View>
-        </View>
 
-        <View style={styles.gameCard}>
-          <Image
-            source={{ uri: 'https://via.placeholder.com/60' }}
-            style={styles.gameIcon}
-          />
-          <View style={styles.gameInfo}>
-            <Text style={styles.gameName}>Final Fantasy VII</Text>
-            <Text style={styles.gameFile}>.sav file</Text>
-          </View>
+          {section.games.map((game) => (
+            <View key={game.id} style={styles.gameCard}>
+              <View style={styles.gameInfo}>
+                <Text style={styles.gameName}>{game.name}</Text>
+                <Text style={styles.gameFile}>{game.fileType}</Text>
+              </View>
+            </View>
+          ))}
         </View>
-      </View>
-
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>DuckStation</Text>
-          <Text style={styles.sectionSize}>950 MB</Text>
-        </View>
-
-        <View style={styles.gameCard}>
-          <Image
-            source={{ uri: 'https://via.placeholder.com/60' }}
-            style={styles.gameIcon}
-          />
-          <View style={styles.gameInfo}>
-            <Text style={styles.gameName}>Resident Evil 2</Text>
-            <Text style={styles.gameFile}>.mcr memory</Text>
-          </View>
-        </View>
-      </View>
+      ))}
     </ScrollView>
   );
 }
@@ -75,89 +57,108 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.bgPrimary,
-    paddingHorizontal: 20,
+    paddingHorizontal: spacing.lg,
   },
   header: {
-    marginTop: 60,
-    marginBottom: 30,
+    marginTop: spacing.headerTop,
+    marginBottom: spacing.xxl,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  logoutButton: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.md,
+    padding: spacing.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
+    ...typography.title,
     color: colors.textPrimary,
-    marginBottom: 8,
+    marginBottom: spacing.xs,
   },
   subtitle: {
-    fontSize: 16,
+    ...typography.subtitle,
     color: colors.textSecondary,
   },
   syncCard: {
     backgroundColor: colors.surface,
-    borderRadius: 16,
-    padding: 20,
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: spacing.xxl,
   },
   syncContent: {
     flex: 1,
   },
   syncLabel: {
-    fontSize: 12,
+    ...typography.small,
     color: colors.textSecondary,
     marginBottom: 4,
     letterSpacing: 1,
   },
   syncStatus: {
-    fontSize: 18,
-    fontWeight: '600',
+    ...typography.cardTitle,
     color: colors.textPrimary,
   },
+  addFolderButton: {
+    backgroundColor: colors.textPrimary,
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    alignItems: 'center',
+    marginBottom: spacing.xxl,
+  },
+  addFolderText: {
+    ...typography.body,
+    fontWeight: '600',
+    color: colors.bgPrimary,
+  },
   section: {
-    marginBottom: 30,
+    marginBottom: spacing.xxl,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    ...typography.sectionTitle,
     color: colors.textPrimary,
   },
   sectionSize: {
-    fontSize: 14,
+    ...typography.caption,
     color: colors.textSecondary,
   },
   gameCard: {
     backgroundColor: colors.surface,
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: spacing.sm,
   },
   gameIcon: {
     width: 60,
     height: 60,
-    borderRadius: 12,
+    borderRadius: borderRadius.md,
     backgroundColor: colors.bgSecondary,
-    marginRight: 16,
+    marginRight: spacing.md,
   },
   gameInfo: {
     flex: 1,
   },
   gameName: {
-    fontSize: 16,
+    ...typography.body,
     fontWeight: '600',
     color: colors.textPrimary,
     marginBottom: 4,
   },
   gameFile: {
-    fontSize: 14,
+    ...typography.caption,
     color: colors.textSecondary,
   },
 });

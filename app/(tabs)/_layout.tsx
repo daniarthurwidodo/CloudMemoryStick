@@ -7,10 +7,12 @@ import { HapticTab } from '@/components/haptic-tab';
 import { TabIconWithIndicator } from '@/components/tab-icon-with-indicator';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useSyncModal } from '@/providers/sync-modal-provider';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const insets = useSafeAreaInsets();
+  const { showSyncModal } = useSyncModal();
 
   return (
     <Tabs
@@ -24,7 +26,7 @@ export default function TabLayout() {
           borderTopWidth: 0,
           elevation: 0,
           shadowColor: 'transparent',
-          height: 80 + insets.bottom,
+          height: 60 + insets.bottom,
           paddingBottom: insets.bottom,
           paddingTop: 10,
         },
@@ -56,7 +58,7 @@ export default function TabLayout() {
         listeners={() => ({
           tabPress: (e) => {
             e.preventDefault();
-            console.log('Sync tapped');
+            showSyncModal();
           },
         })}
         options={{
@@ -64,7 +66,7 @@ export default function TabLayout() {
             <AnimatedTabIcon 
               name="sync" 
               color={Colors[colorScheme ?? 'dark'].tint} 
-              focused={true}
+              focused={focused}
             />
           ),
         }}
