@@ -1,8 +1,21 @@
 import { borderRadius, colors, spacing, typography } from '@/constants/theme';
-import { mockBackupHistoryItems } from '@/data/mockup-data';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useBackupHistory } from '@/src/core/query/hooks';
+import { Ionicons } from '@expo/vector-icons';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function HistoryPage() {
+  const { data: historyItems, isLoading } = useBackupHistory();
+
+  if (isLoading) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color={colors.textPrimary} />
+      </View>
+    );
+  }
+
+  const failedItems = historyItems?.filter((item) => item.status === 'failed') ?? [];
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -11,44 +24,60 @@ export default function HistoryPage() {
       </View>
       
       <View style={styles.statusCard}>
-        <Text style={styles.statusTitle}>No recent restore failures</Text>
-        <Text style={styles.statusSubtitle}>All systems operating normally</Text>
+        <Text style={styles.statusTitle}>
+          {failedItems.length === 0 
+            ? 'No recent restore failures' 
+            : `${failedItems.length} failed operation${failedItems.length > 1 ? 's' : ''}`}
+        </Text>
+        <Text style={styles.statusSubtitle}>
+          {failedItems.length === 0 
+            ? 'All systems operating normally' 
+            : 'Review failed operations below'}
+        </Text>
       </View>
 
-      <View style={styles.historyList}>
-        {mockBackupHistoryItems.map((item) => (
-          <View key={item.id} style={styles.historyItem}>
-            <View style={styles.historyHeader}>
-              <View style={styles.historyInfo}>
-                <Text style={styles.gameName}>{item.game}</Text>
-                <Text style={styles.emulatorName}>{item.emulator}</Text>
+      {!historyItems || historyItems.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Ionicons name="time-outline" size={64} color={colors.textSecondary} />
+          <Text style={styles.emptyTitle}>No backup history</Text>
+          <Text style={styles.emptySubtitle}>Your backup activity will appear here</Text>
+        </View>
+      ) : (
+        <View style={styles.historyList}>
+          {historyItems.map((item) => (
+            <View key={item.id} style={styles.historyItem}>
+              <View style={styles.historyHeader}>
+                <View style={styles.historyInfo}>
+                  <Text style={styles.gameName}>{item.game}</Text>
+                  <Text style={styles.emulatorName}>{item.emulator}</Text>
+                </View>
+                <View style={[
+                  styles.statusBadge,
+                  item.status === 'success' && styles.statusSuccess,
+                  item.status === 'failed' && styles.statusFailed,
+                  item.status === 'pending' && styles.statusPending,
+                ]}>
+                  <Text style={styles.statusText}>
+                    {item.status.toUpperCase()}
+                  </Text>
+                </View>
               </View>
-              <View style={[
-                styles.statusBadge,
-                item.status === 'success' && styles.statusSuccess,
-                item.status === 'failed' && styles.statusFailed,
-                item.status === 'pending' && styles.statusPending,
-              ]}>
-                <Text style={styles.statusText}>
-                  {item.status.toUpperCase()}
+              
+              <View style={styles.historyDetails}>
+                <Text style={styles.detailText}>
+                  {item.action === 'backup' ? '↑' : '↓'} {item.action.toUpperCase()}
+                </Text>
+                <Text style={styles.detailText}>•</Text>
+                <Text style={styles.detailText}>{item.size}</Text>
+                <Text style={styles.detailText}>•</Text>
+                <Text style={styles.detailText}>
+                  {item.date} {item.time}
                 </Text>
               </View>
             </View>
-            
-            <View style={styles.historyDetails}>
-              <Text style={styles.detailText}>
-                {item.action === 'backup' ? '↑' : '↓'} {item.action.toUpperCase()}
-              </Text>
-              <Text style={styles.detailText}>•</Text>
-              <Text style={styles.detailText}>{item.size}</Text>
-              <Text style={styles.detailText}>•</Text>
-              <Text style={styles.detailText}>
-                {item.date} {item.time}
-              </Text>
-            </View>
-          </View>
-        ))}
-      </View>
+          ))}
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -58,6 +87,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bgPrimary,
     paddingHorizontal: spacing.lg,
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     marginTop: spacing.headerTop,
@@ -141,6 +174,21 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   detailText: {
+    ...typography.caption,
+    color: colors.textSecondary,
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.xxl * 2,
+  },
+  emptyTitle: {
+    ...typography.cardTitle,
+    color: colors.textPrimary,
+    marginTop: spacing.lg,
+    marginBottom: spacing.xs,
+  },
+  emptySubtitle: {
     ...typography.caption,
     color: colors.textSecondary,
   },

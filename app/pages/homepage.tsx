@@ -1,9 +1,47 @@
 import { borderRadius, colors, spacing, typography } from '@/constants/theme';
-import { mockEmulatorSections } from '@/data/mockup-data';
+import { useEmulatorSections, useSyncStatus } from '@/src/core/query/hooks';
+import * as DocumentPicker from 'expo-document-picker';
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 export default function HomePage() {
+  const { data: emulatorSections, isLoading: isLoadingEmulators } = useEmulatorSections();
+  const { data: syncStatus, isLoading: isLoadingSync } = useSyncStatus();
+
+  const handleAddFolder = async () => {
+    try {
+      // For Android 11+ (API 30+), use copyToCacheDirectory: false to get direct URI access
+      // This allows access to /Android/data via Storage Access Framework
+      const result = await DocumentPicker.getDocumentAsync({
+        type: '*/*',
+        copyToCacheDirectory: false,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const folderUri = result.assets[0].uri;
+        const folderName = result.assets[0].name;
+        
+        Alert.alert(
+          'Folder Selected',
+          `Name: ${folderName}\nURI: ${folderUri}`,
+        );
+        // TODO: Add logic to process the selected folder
+        // You can use expo-file-system to read/write using the URI
+      }
+    } catch (error) {
+      console.error('Error picking folder:', error);
+      Alert.alert('Error', 'Failed to open folder picker');
+    }
+  };
+
+  if (isLoadingEmulators || isLoadingSync) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color={colors.textPrimary} />
+      </View>
+    );
+  }
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -19,36 +57,46 @@ export default function HomePage() {
       <View style={styles.syncCard}>
         <View style={styles.syncContent}>
           <Text style={styles.syncLabel}>AUTO SYNC</Text>
-          <Text style={styles.syncStatus}>Google Drive Connected</Text>
+          <Text style={styles.syncStatus}>
+            {syncStatus?.provider} {syncStatus?.status}
+          </Text>
         </View>
         <Switch
-          value={true}
+          value={syncStatus?.autoSyncEnabled ?? false}
           trackColor={{ false: '#3A3A44', true: colors.textPrimary }}
           thumbColor={colors.textPrimary}
         />
       </View>
 
-      <Pressable style={styles.addFolderButton}>
+      <Pressable style={styles.addFolderButton} onPress={handleAddFolder}>
         <Text style={styles.addFolderText}>Add folder</Text>
       </Pressable>
 
-      {mockEmulatorSections.map((section) => (
-        <View key={section.name} style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>{section.name}</Text>
-            <Text style={styles.sectionSize}>{section.size}</Text>
-          </View>
-
-          {section.games.map((game) => (
-            <View key={game.id} style={styles.gameCard}>
-              <View style={styles.gameInfo}>
-                <Text style={styles.gameName}>{game.name}</Text>
-                <Text style={styles.gameFile}>{game.fileType}</Text>
-              </View>
-            </View>
-          ))}
+      {!emulatorSections || emulatorSections.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Ionicons name="folder-open-outline" size={64} color={colors.textSecondary} />
+          <Text style={styles.emptyTitle}>No emulators found</Text>
+          <Text style={styles.emptySubtitle}>Add a folder to get started</Text>
         </View>
-      ))}
+      ) : (
+        emulatorSections.map((section) => (
+          <View key={section.name} style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>{section.name}</Text>
+              <Text style={styles.sectionSize}>{section.size}</Text>
+            </View>
+
+            {section.games.map((game) => (
+              <View key={game.id} style={styles.gameCard}>
+                <View style={styles.gameInfo}>
+                  <Text style={styles.gameName}>{game.name}</Text>
+                  <Text style={styles.gameFile}>{game.fileType}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+        ))
+      )}
     </ScrollView>
   );
 }
@@ -58,6 +106,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bgPrimary,
     paddingHorizontal: spacing.lg,
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     marginTop: spacing.headerTop,
@@ -158,6 +210,21 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   gameFile: {
+    ...typography.caption,
+    color: colors.textSecondary,
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.xxl * 2,
+  },
+  emptyTitle: {
+    ...typography.cardTitle,
+    color: colors.textPrimary,
+    marginTop: spacing.lg,
+    marginBottom: spacing.xs,
+  },
+  emptySubtitle: {
     ...typography.caption,
     color: colors.textSecondary,
   },
