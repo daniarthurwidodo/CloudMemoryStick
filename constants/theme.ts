@@ -5,8 +5,20 @@
 
 import { Platform } from 'react-native';
 
+export const colors = {
+  bgPrimary: "#0A0A0F",
+  bgSecondary: "#111118",
+  surface: "#16161F",
+  gold: "#FFD700",
+  goldSoft: "#FFC300",
+  textPrimary: "#F5F7FA",
+  textSecondary: "#9AA4B2",
+  success: "#00FF9C",
+  danger: "#FF3B3B",
+};
+
 const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+const tintColorDark = colors.gold;
 
 export const Colors = {
   light: {
@@ -18,11 +30,11 @@ export const Colors = {
     tabIconSelected: tintColorLight,
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
+    text: colors.textPrimary,
+    background: colors.bgPrimary,
     tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
+    icon: colors.textSecondary,
+    tabIconDefault: colors.textSecondary,
     tabIconSelected: tintColorDark,
   },
 };

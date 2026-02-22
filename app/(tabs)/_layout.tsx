@@ -1,9 +1,10 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { AnimatedTabIcon } from '@/components/animated-tab-icon';
 import { HapticTab } from '@/components/haptic-tab';
+import { TabIconWithIndicator } from '@/components/tab-icon-with-indicator';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
@@ -14,26 +15,20 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: colorScheme === 'dark' ? '#8E8E93' : '#999',
         tabBarInactiveTintColor: colorScheme === 'dark' ? '#8E8E93' : '#999',
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarStyle: {
-          backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#FFFFFF',
+          backgroundColor: colorScheme === 'dark' ? '#0A0A0F' : '#FFFFFF',
           borderTopWidth: 0,
-          elevation: 8,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 8,
-          height: 60 + insets.bottom,
+          elevation: 0,
+          shadowColor: 'transparent',
+          height: 80 + insets.bottom,
           paddingBottom: insets.bottom,
-          paddingTop: 8,
+          paddingTop: 10,
         },
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '600',
-        },
+        tabBarShowLabel: false,
         tabBarIconStyle: {
           marginTop: 0,
           marginBottom: 0,
@@ -46,7 +41,14 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          tabBarIcon: ({ color }) => <Ionicons name="home" size={28} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabIconWithIndicator 
+              name="home-outline" 
+              color={color} 
+              focused={focused}
+              activeColor={Colors[colorScheme ?? 'dark'].tint}
+            />
+          ),
         }}
       />
       <Tabs.Screen
@@ -58,13 +60,26 @@ export default function TabLayout() {
           },
         })}
         options={{
-          tabBarIcon: ({ color }) => <Ionicons name="sync" size={28} color={color} />,
+          tabBarIcon: ({ focused }) => (
+            <AnimatedTabIcon 
+              name="sync" 
+              color={Colors[colorScheme ?? 'dark'].tint} 
+              focused={true}
+            />
+          ),
         }}
       />
       <Tabs.Screen
         name="history"
         options={{
-          tabBarIcon: ({ color }) => <Ionicons name="time" size={28} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabIconWithIndicator 
+              name="time-outline" 
+              color={color} 
+              focused={focused}
+              activeColor={Colors[colorScheme ?? 'dark'].tint}
+            />
+          ),
         }}
       />
     </Tabs>
